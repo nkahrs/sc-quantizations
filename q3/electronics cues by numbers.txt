@@ -1,0 +1,46 @@
+electronics cues for quantizations 3
+
+00	silence
+01	highest bin of FFT passes through
+02	ring-mod by highest bin of FFT
+03	ring-mod by bin 4
+04	spectral freeze on
+05	silent
+06	ring-mod by bin 4
+07	ring-mod by bin 3
+08	spectral freeze on
+09	fade to bitcrush of input
+10	FFT am bin 3
+11	FFT am bin 2
+12	FFT am bin 1
+13	ring-mod by bin 1
+14	ring-mod by bin 2 and freeze
+15	fade to bitcrush
+16	FFT am by bins 1,2,3,4 in rhythm
+17	ring-mod by bin 4
+18	add in distortion
+19	FFT am by bin 4
+20	fade out
+21	ring-mod by bin 2
+22	ring-mod by bin 3
+23	ring-mod by bin 4
+24	ring-mod by bins 5,6,7,8 (in tempo) and freese
+25	ring-mod by bins 1,2,3,4 (in tempo) and freeze
+26	ring-mod by bin 4 and freeze
+27	ring-mod by bin 3 and freeze
+28	ring-mod by bin 2 and freeze
+29	ring-mod by bin 1 and freeze
+30	FFT am by bin 1
+
+
+spatialization?
+cues 1,2 in front
+cue 3 immediately in the back
+cues 18,19 move towards the front
+cues 20-29 in the front
+cue 30 then in the back
+
+
+4/16 changes:
+nope. No spatialization, not worth it.
+cue 20 isn't ring-mod, but instead a slow fadeout of FFT am.
