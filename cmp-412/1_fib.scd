@@ -13,7 +13,8 @@ Routine({
 	// generate Fibonacci series
 	var this_ = 1;
 	var next_ = 2;
-	var tmp, rat, totaldur; // placeholder, iterations of golden ratio, section duration
+	var tmp, rat, thisdur, totaldur; // placeholder, iterations of golden ratio, single section duration, total duration elapsed duration
+	var phi = 514229 / 317811; // a nice approximation of phi, precise enough
 
 	// ======
 	// section 1: present a sequence of Fibonacci Ratio FM synths with increasing durations and indices
@@ -31,9 +32,10 @@ Routine({
 		(this_/5).wait;
 	});
 
-	"Section 2".postln;
+	("Section 1b: " + totaldur).postln;
 	// mark midpoint with a single harmonic timbre at f0 * ratio
 	Synth(\fm, [\cf, f0 * rat, \mc, 1, \ic, 1, \dur, 8, \amp, 0.2]);
+	totaldur = totaldur + 5;
 	5.wait;
 
 	// invert process: go backwards in Fib series and use undertones
@@ -45,14 +47,24 @@ Routine({
 		this_ = tmp;
 
 		Synth(\fm, [\cf, f0 / rat, \mc, rat, \ic, this_**rat, \dur, this_, \amp, 0.1]);
+		totaldur = totaldur + (this_/5);
 		(this_/5).wait;
 	});
-	Synth(\fm, [\cf, f0 * rat, \mc, 1, \ic, 1, \dur, 8, \amp, 0.2]);
-	5.wait;
+	Synth(\fm, [\cf, f0 / phi, \mc, 1, \ic, 1, \dur, 8, \amp, 0.2]);
+	totaldur = totaldur + 3;
+	3.wait;
+	// Synth(\fm, [\cf, f0 * phi, \mc, 1, \ic, 1, \dur, 8, \amp, 0.2]);
+
+	("duration: " + totaldur).postln;
 
 }).play;
 )
 
+// part 2: FM with filters
+// part 3: pulse train ratios/filters
+
+// part 1: part 2 is GS
+// (parts 1+2): part 3 is GS
 
 (
 var this_ = 34;
