@@ -116,16 +116,33 @@ Routine({
 // part 1: part 2 is GS
 // (parts 1+2): part 3 is GS
 
+// part 3 in draft form
 (
-var this_ = 34;
-var next_ = 55;
+var this_ = 233;
+var next_ = 377;
 var tmp;
 var rat;
-7.do{
+13.do{
 	tmp = next_ - this_;
 	next_ = this_;
 	this_ = tmp;
-	tmp.postln;
-	(this_/next_).postln;
+	[this_, next_].postln
 }
+)
+
+(
+var this_ = 233;
+var next_ = 377;
+var tmp;
+var rat;
+Routine({
+	13.do{
+		[this_, next_].postln;
+		{Pulse.ar([this_, next_])*SinOsc.ar(377)*EnvGen.kr(Env([0,1,1,0],[0.01,1.98,0.01]))}.play;
+		2.wait;
+		tmp = next_ - this_;
+		next_ = this_;
+		this_ = tmp;
+}
+}).play;
 )
