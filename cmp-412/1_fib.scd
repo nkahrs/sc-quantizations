@@ -82,7 +82,7 @@ Routine({
 
 		[rat, this_, thisdeviation].postln;
 
-		Synth(\fmfilter, [\cf, f0, \mc, rat, \ic, this_**(1/rat), \dur, thisdeviation,
+		Synth(\fmfilter, [\cf, f0, \mc, (1/rat), \ic, this_**(1/rat), \dur, thisdeviation,
 			\amp, sqrt(thisdeviation), \ff, f0 * phi, \fq, thisdeviation]);
 		totaldur = totaldur + (thisdeviation/13);
 		thisdur = thisdur + (thisdeviation/13);
@@ -95,11 +95,15 @@ Routine({
 				(thisdeviation/26).wait
 		});
 
+		// I need to revise this section for distortion, and durations get excessive
+		// I need a logistic curve or something like that
+
 	});
 
 	(nextdur - thisdur).wait;
 
 	("Section 3; " + totaldur).postln;
+	// section 3: combined pulse trains of higher and lower Fibonacci series, decreasing over time as in section 1b. Ratios between the two pulse trains are various golden sections. Each pulse train is filtered at f0.
 
 
 }).play;
