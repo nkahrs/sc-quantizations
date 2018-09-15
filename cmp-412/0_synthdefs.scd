@@ -18,6 +18,20 @@ SynthDef(\fm, {
 	Out.ar(0, sound);
 }).load(s);
 
+SynthDef(\fmmono, {
+	// cf = carrier freq, mc = modulator/carrier, ic = index/carrier
+	arg cf, mc, ic, dur, amp;
+	var modulatorfreq, carrier, modulator, index, sound, env, outBus;
+
+	modulatorfreq = mc*cf;
+	index = ic*cf;
+	modulator = index * SinOsc.ar(modulatorfreq);
+	carrier = amp * SinOsc.ar(cf + modulator);
+	env = EnvGen.kr(Env([0, 1, 0], [0.1, dur-0.1]), doneAction:2);
+	sound = carrier * env;
+	Out.ar(outBus, sound);
+}).load(s);
+
 SynthDef(\fmfilter, {
 	// cf = carrier freq, mc = modulator/carrier, ic = index/carrier
 	// ff = filter freq, fq = filter q
@@ -33,6 +47,22 @@ SynthDef(\fmfilter, {
 	sound = sound * env;
 	sound = sound.dup;
 	Out.ar(0, sound);
+}).load(s);
+
+SynthDef(\fmfiltermono, {
+	// cf = carrier freq, mc = modulator/carrier, ic = index/carrier
+	// ff = filter freq, fq = filter q
+	arg cf, mc, ic, dur, amp, ff, fq;
+	var modulatorfreq, carrier, modulator, index, sound, env, outBus;
+
+	modulatorfreq = mc*cf;
+	index = ic*cf;
+	modulator = index * SinOsc.ar(modulatorfreq);
+	carrier = amp * SinOsc.ar(cf + modulator);
+	env = EnvGen.kr(Env([0, 1, 0], [0.1, dur-0.1]), doneAction:2);
+	sound = BPF.ar(carrier, ff, 1/fq);
+	sound = sound * env;
+	Out.ar(outBus, sound);
 }).load(s);
 
 SynthDef(\pitchedpulse, {
