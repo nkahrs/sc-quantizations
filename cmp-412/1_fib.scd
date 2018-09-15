@@ -76,27 +76,24 @@ Routine({
 		this_ = next_;
 		next_ = tmp;
 
-		// determine synth duration, wait time, and filter intensity from the deviation of "rat" from "phi" (ie how far this Fib ratio deviates from golden section)
+		// determine synth duration, wait time, and filter intensity from the deviation of "rat" from "oldrat" (ie change in how we're approaching harmonic series
 		// measured in absolute difference in cents
 		thisdeviation = max((1/phi)/abs((rat / oldrat).ratiomidi), 1);
 
 		[rat, this_, thisdeviation].postln;
 
-		Synth(\fmfilter, [\cf, f0, \mc, (1/rat), \ic, this_**(1/rat), \dur, thisdeviation,
-			\amp, sqrt(thisdeviation), \ff, f0 * phi, \fq, thisdeviation]);
+		Synth(\fmfilter, [\cf, f0, \mc, (1/rat), \ic, this_**(1/rat), \dur, thisdeviation**(1/rat), \amp, thisdeviation**(phi/this_), \ff, f0 * phi, \fq, thisdeviation**(1/phi)]);
+		// these values for amplitude and duration are good compromises between mathematical elegance and wanting to temper changes
 		totaldur = totaldur + (thisdeviation/13);
 		thisdur = thisdur + (thisdeviation/13);
 		["durs", thisdur, nextdur].postln;
-		if( (thisdeviation/8 < 13),
+		if( (thisdeviation/8 < 13), // if it's a really long-duration cue, do things differently
 			{(thisdeviation/13).wait;}, // then
 			{(thisdeviation/26).wait; // else
-				Synth(\fm, [\cf, f0 * rat, \mc, 1, \ic, 1, \dur, thisdeviation / 10, \amp, (1/(abs((rat/oldrat).ratiomidi).midiratio))**thisdeviation]);
+				Synth(\fm, [\cf, f0 * rat, \mc, 1, \ic, 1, \dur, thisdeviation / 10, \amp, 1/21]);
 				flag = false; // long duration cues to end loop early
 				(thisdeviation/26).wait
 		});
-
-		// I need to revise this section for distortion, and durations get excessive
-		// I need a logistic curve or something like that
 
 	});
 
@@ -179,7 +176,7 @@ Routine({
 		this_ = tmp;
 		whichspeaker = 1 - whichspeaker;
 	};
-	Synth(\fm, [\cf, 377*377/610, \mc, 1, \ic, 1, \dur, 4, \amp, 0.2]);
+	Synth(\fm, [\cf, 377*377/610, \mc, 1, \ic, 1, \dur, 6, \amp, 0.2]);
 }).play;
 )
 
