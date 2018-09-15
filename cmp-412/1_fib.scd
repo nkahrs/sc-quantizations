@@ -1,10 +1,9 @@
-// CMP 412, Fall 2018, Composition Project 1
-// (based on Lucas/Fibonacci Series)
-// Noah Kahrs, September 2018
-
-// synthdefs are in 0_synthdefs.scd
-
 (
+/* CMP 412, Fall 2018, Composition Project 1
+(based on Lucas/Fibonacci Series)
+Noah Kahrs, September 2018
+synthdefs are in 0_synthdefs.scd */
+
 // pick a universal fundamental frequency
 var f0 = 377; // near G384, and a Fibonacci number
 // obviously seconds are relative so it doesn't really matter that it's Fib.
@@ -35,7 +34,7 @@ Routine({
 		tmp = this_+next_; // calculate next two elements of series
 		this_ = next_;
 		next_ = tmp;
-		Synth(\fm, [\cf, f0, \mc, rat, \ic, this_**(1/rat), \dur, this_, \amp, 0.1]);
+		Synth(\fm, [\cf, f0, \mc, rat, \ic, this_**(1/rat), \dur, this_, \amp, 0.1*(0.97**this_)]);
 		totaldur = totaldur + (this_/5);
 		(this_/5).wait;
 	});
@@ -47,6 +46,7 @@ Routine({
 	5.wait;
 
 	// invert process: go backwards in Fib series and use undertones
+	// alternating hard panning
 	while({this_ > 0}, { // next section just lasts until it's done
 		rat = (this_ / next_);
 		[rat, this_].postln;
@@ -54,7 +54,9 @@ Routine({
 		next_ = this_;
 		this_ = tmp;
 
-		Synth(\fm, [\cf, f0 / rat, \mc, rat, \ic, this_**rat, \dur, this_, \amp, 0.1]);
+		Synth(\fmmono, [\cf, f0 / rat, \mc, rat, \ic, this_**rat, \dur, this_,
+			\amp, 0.1, \outBus, whichspeaker]);
+		whichspeaker = 1 - whichspeaker;
 		totaldur = totaldur + (this_/5);
 		(this_/5).wait;
 	});
@@ -88,14 +90,14 @@ Routine({
 
 		[rat, this_, thisdeviation].postln;
 
-		Synth(\fmfilter, [\cf, f0, \mc, (1/rat), \ic, this_**(1/rat),
+		Synth(\fmfiltermono, [\cf, f0, \mc, (1/rat), \ic, this_**(1/rat),
 			\dur, thisdeviation**(1/rat), \amp, thisdeviation**(phi/this_),
-			\ff, f0 * phi, \fq, thisdeviation**(1/phi)]);
+			\ff, f0 * phi, \fq, thisdeviation**(1/phi), \outBus, whichspeaker]);
 		// these values for amplitude and duration are good compromises
 		//between mathematical elegance and wanting to temper changes
+		whichspeaker = 1 - whichspeaker;
 		totaldur = totaldur + (thisdeviation/13);
 		thisdur = thisdur + (thisdeviation/13);
-		["durs", thisdur, nextdur].postln;
 		if( (thisdeviation/8 < 13),
 			// if it's a really long-duration cue, do things differently
 			{(thisdeviation/13).wait;}, // then
@@ -105,7 +107,6 @@ Routine({
 				flag = false; // long duration cues to end loop early
 				(thisdeviation/26).wait
 		});
-
 	});
 
 	(nextdur - thisdur).wait;
@@ -119,13 +120,10 @@ Routine({
 	thisdur = 0;
 	nextdur = totaldur / (1.618);
 
-	12.do{ // 3/2 is too recognizable a polyrhythm, 5/3 is a good place to end
+	11.do{ // 3/2 is too recognizable a polyrhythm, 5/3 is a good place to end
 		arg thisiter;
 		var minwait, maxwait, synthwait, itersleft;
-
 		itersleft = 13 - thisiter;
-		itersleft.postln;
-
 		/* how to establish how long it is?
 		prolong if difference between values is close to critical band
 		want average-ish wait time to be (time left / iters left)
@@ -136,12 +134,15 @@ Routine({
 		minwait = synthwait/(1+(itersleft/13));
 
 		tmp = next_ - this_; // used for next Fibonacci duration
-		tmp.postln;
 		synthwait = min(20/tmp, tmp/20).linexp(0, 1, minwait, maxwait);
+		rat = next_/this_;
 
 		[this_, next_].postln;
 		Synth(\pitchedpulse, [\pf, next_, \sf, 377, \dur, (phi + 1) * synthwait,
-			\ramp, (synthwait/3), \outBus, whichspeaker, \amp, 0.5]);
+			\ramp, (synthwait/3), \outBus, whichspeaker,
+			// determine amplitude in accordance with duration
+			\amp, 0.3/synthwait;]
+		);
 		synthwait.wait;
 		thisdur = thisdur + synthwait;
 		totaldur = totaldur + synthwait;
@@ -157,53 +158,3 @@ Routine({
 
 }).play;
 )
-
-
-(
-var this_ = 377;
-var next_ = 610;
-var tmp;
-var rat;
-var whichspeaker = 0;
-var totaldur = 38.2339;
-var thisdur = 0;
-var nextdur = totaldur / (1.618);
-var phi = 514229 / 317811;
-nextdur.postln;
-
-Routine({
-	12.do{ // 3/2 is too recognizable a polyrhythm, 5/3 is a good place to end
-		arg thisiter;
-		var minwait, maxwait, synthwait, itersleft;
-
-		itersleft = 13 - thisiter;
-		/* how to establish how long it is?
-		prolong if difference between values is close to critical band
-		want average-ish wait time to be (time left / iters left)
-		determine acceptable deviation by number of iterations left */
-
-		synthwait = (nextdur - thisdur) / itersleft;
-		maxwait = synthwait*(1+(itersleft/13));
-		minwait = synthwait/(1+(itersleft/13));
-
-		tmp = next_ - this_; // used for next Fibonacci duration
-		synthwait = min(20/tmp, tmp/20).linexp(0, 1, minwait, maxwait);
-
-		[this_, next_].postln;
-		Synth(\pitchedpulse, [\pf, next_, \sf, 377, \dur, (phi + 1) * synthwait,
-			\ramp, (synthwait/3), \outBus, whichspeaker, \amp, 0.5]);
-		synthwait.wait;
-		thisdur = thisdur + synthwait;
-		totaldur = totaldur + synthwait;
-		next_ = this_;
-		this_ = tmp;
-		whichspeaker = 1 - whichspeaker;
-	};
-	thisdur.postln;
-	Synth(\fm, [\cf, 377*377/610, \mc, 1, \ic, 1, \dur, (nextdur - thisdur), \amp, 0.2]);
-	totaldur = totaldur + nextdur - thisdur;
-	(nextdur-thisdur).wait;
-	totaldur.postln;
-}).play;
-)
-

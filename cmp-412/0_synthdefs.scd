@@ -20,8 +20,8 @@ SynthDef(\fm, {
 
 SynthDef(\fmmono, {
 	// cf = carrier freq, mc = modulator/carrier, ic = index/carrier
-	arg cf, mc, ic, dur, amp;
-	var modulatorfreq, carrier, modulator, index, sound, env, outBus;
+	arg cf, mc, ic, dur, amp, outBus;
+	var modulatorfreq, carrier, modulator, index, sound, env;
 
 	modulatorfreq = mc*cf;
 	index = ic*cf;
@@ -52,8 +52,8 @@ SynthDef(\fmfilter, {
 SynthDef(\fmfiltermono, {
 	// cf = carrier freq, mc = modulator/carrier, ic = index/carrier
 	// ff = filter freq, fq = filter q
-	arg cf, mc, ic, dur, amp, ff, fq;
-	var modulatorfreq, carrier, modulator, index, sound, env, outBus;
+	arg cf, mc, ic, dur, amp, ff, fq, outBus;
+	var modulatorfreq, carrier, modulator, index, sound, env;
 
 	modulatorfreq = mc*cf;
 	index = ic*cf;
