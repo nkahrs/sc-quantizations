@@ -34,8 +34,18 @@ SynthDef(\fmfilter, {
 	sound = sound.dup;
 	Out.ar(0, sound);
 }).load(s);
+
+SynthDef(\pitchedpulse, {
+	// pf = pulse freq, sf = sine freq (it's just am of pulse by sine)
+	arg pf, sf, dur, ramp, outBus, amp;
+	var sound, env;
+	sound = Pulse.ar(pf/2) * SinOsc.ar(sf);
+	env = amp * EnvGen.kr(Env([0,1,1,0], [ramp, dur-(2*ramp), ramp]), doneAction:2);
+	Out.ar(outBus, sound*env);
+}).load(s);
 )
 
 // tests
 Synth(\fm, [\cf, 440, \mc, 1.01, \ic, 0.5, \dur, 2, \amp, 0.5])
 Synth(\fmfilter, [\cf, 440, \mc, 1.05, \ic, 5, \dur, 2, \amp, 5, \ff, 2*660, \fq, 50])
+Synth(\pitchedpulse, [\pf, 3, \sf, 440, \dur, 2, \ramp, 0.1, \outBus, 0, \amp, 0.5])

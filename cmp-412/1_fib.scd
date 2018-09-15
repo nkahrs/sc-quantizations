@@ -14,7 +14,7 @@ Routine({
 	// generate Fibonacci series
 	var this_ = 1;
 	var next_ = 2;
-	var tmp, rat, thisdur, nextdur, totaldur, flag; // placeholder, iterations of golden ratio, single section duration, total duration elapsed duration, cues to exit loop
+	var tmp, rat, thisdur, nextdur, totaldur, flag, whichspeaker; // placeholder, iterations of golden ratio, single section duration, total duration elapsed duration, cues to exit loop, alternations between speakers
 	var phi = 514229 / 317811; // a nice approximation of phi, precise enough
 
 	totaldur = 0;
@@ -104,7 +104,23 @@ Routine({
 
 	("Section 3; " + totaldur).postln;
 	// section 3: combined pulse trains of higher and lower Fibonacci series, decreasing over time as in section 1b. Ratios between the two pulse trains are various golden sections. Each pulse train is filtered at f0.
-
+	this_ = 377;
+	next_ = 610;
+	whichspeaker = 0;
+	12.do{ // 3/2 is too recognizable a polyrhythm, 5/3 is a good place to end
+		[this_, next_].postln;
+		Synth(\pitchedpulse, [\pf, next_, \sf, 377, \dur, 4, \ramp, 0.5, \outBus, whichspeaker, \amp, 0.5]);
+		1.5.wait; // I need to put more thought into a durational scheme here
+		totaldur = totaldur + 1.5;
+		tmp = next_ - this_;
+		next_ = this_;
+		this_ = tmp;
+		whichspeaker = 1 - whichspeaker;
+	};
+	Synth(\fm, [\cf, 377*377/610, \mc, 1, \ic, 1, \dur, 4, \amp, 0.2]);
+	totaldur = totaldur + 4;
+	4.wait;
+	("end; " + totaldur).postln;
 
 }).play;
 )
@@ -131,14 +147,14 @@ var rat;
 )
 
 (
-var this_ = 233;
-var next_ = 377;
+var this_ = 377;
+var next_ = 610;
 var tmp;
 var rat;
 Routine({
-	13.do{
+	11.do{ // 3/2 is too recognizable a polyrhythm, 5/3 is a good place to end
 		[this_, next_].postln;
-		{Pulse.ar([this_, next_])*SinOsc.ar(377)*EnvGen.kr(Env([0,1,1,0],[0.01,1.98,0.01]))}.play;
+		{Pulse.ar([this_, next_]/2)*SinOsc.ar(377)*EnvGen.kr(Env([0,1,1,0],[0.01,1.98,0.01]))}.play;
 		2.wait;
 		tmp = next_ - this_;
 		next_ = this_;
@@ -146,3 +162,24 @@ Routine({
 }
 }).play;
 )
+
+(
+var this_ = 377;
+var next_ = 610;
+var tmp;
+var rat;
+var whichspeaker = 0;
+Routine({
+	12.do{ // 3/2 is too recognizable a polyrhythm, 5/3 is a good place to end
+		[this_, next_].postln;
+		Synth(\pitchedpulse, [\pf, next_, \sf, 377, \dur, 4, \ramp, 0.5, \outBus, whichspeaker, \amp, 0.5]);
+		1.5.wait;
+		tmp = next_ - this_;
+		next_ = this_;
+		this_ = tmp;
+		whichspeaker = 1 - whichspeaker;
+	};
+	Synth(\fm, [\cf, 377*377/610, \mc, 1, \ic, 1, \dur, 4, \amp, 0.2]);
+}).play;
+)
+
