@@ -10,5 +10,3 @@ In `q3`, _Quantizations 3_ is for clarinet and live electronics.
 _Quantizations 4_ involved playback of samples. Most samples ended up being created very tediously in Max/MSP.
 
 In `q5`,_Quantizations 5_ for two sixxen and live electronics is in progress, but the tools I'm using (though no sound files) are here.
-
-`cmp-412` contains short pieces written for Bob Morris' "Compositional Practices 1925-1955" course, which are fully electronic but all explore similar concerns to the _Quantizations_ pieces.
